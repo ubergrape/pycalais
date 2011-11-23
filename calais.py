@@ -67,12 +67,13 @@ class Calais(object):
         self.user_directives["submitter"] = submitter
 
     def _get_params_XML(self):
-        props = lambda x: " ".join('c:%s="%s"' % (key, escape(value))
-                                                  for (key, value) in x.items()
-                                                  if value)
-        return PARAMS_XML % map(props, [self.processing_directives,
-                                        self.user_directives,
-                                        self.external_metadata])
+        x = lambda y: " ".join('c:%s="%s"' % (key, escape(value))
+                                              for (key, value) in y.items()
+                                              if value)
+        # TODO: clean this up. Sounds like a good use for some lambda.
+        return PARAMS_XML % (x(self.processing_directives),
+                             x(self.user_directives),
+                             x(self.external_metadata))
 
     def rest_POST(self, content):
         params = urllib.urlencode(
@@ -100,8 +101,9 @@ class Calais(object):
         """
         Creates a SHA1 hash of the text of your submission.
         """
-        checksum = hashlib.sha1(text)
-        return checksum.hexdigest()
+        h = hashlib.sha1()
+        h.update(text)
+        return h.hexdigest()
 
     def preprocess_html(self, html):
         html = html.replace('\n', '')
