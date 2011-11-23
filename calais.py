@@ -8,11 +8,11 @@ __version__ = '1.0'
 
 import re
 import string
+import random
 import urllib
 import httplib
 import hashlib
 import mimetypes
-from random import choice
 from xml.sax.saxutils import escape
 from StringIO import StringIO
 try:  # Python <2.6 needs the simplejson module.
@@ -24,9 +24,10 @@ except ImportError:
 PARAMS_XML = """
 <c:params xmlns:c="http://s.opencalais.com/1/pred/"
           xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<c:processingDirectives %s> </c:processingDirectives>
-<c:userDirectives %s> </c:userDirectives>
-<c:externalMetadata %s> </c:externalMetadata> </c:params>
+    <c:processingDirectives %s> </c:processingDirectives>
+    <c:userDirectives %s> </c:userDirectives>
+    <c:externalMetadata %s> </c:externalMetadata>
+</c:params>
 """
 
 SCRIPT_STYLE_RE = re.compile(
@@ -66,18 +67,12 @@ class Calais(object):
         self.user_directives["submitter"] = submitter
 
     def _get_params_XML(self):
-        # TODO: clean this up. Sounds like a good use for some lambda.
-        return PARAMS_XML % (
-            " ".join('c:%s="%s"' % (k, escape(v)) for (k, v)
-                                        in self.processing_directives.items()
-                                        if v),
-            " ".join('c:%s="%s"' % (k, escape(v)) for (k, v)
-                                        in self.user_directives.items()
-                                        if v),
-            " ".join('c:%s="%s"' % (k, escape(v)) for (k, v)
-                                        in self.external_metadata.items()
-                                        if v)
-        )
+        props = lambda x: " ".join('c:%s="%s"' % (key, escape(value))
+                                                  for (key, value) in x.items()
+                                                  if value)
+        return PARAMS_XML % map(props, [self.processing_directives,
+                                        self.user_directives,
+                                        self.external_metadata])
 
     def rest_POST(self, content):
         params = urllib.urlencode(
@@ -99,18 +94,14 @@ class Calais(object):
         Creates a random 10-character ID for your submission.
         """
         chars = string.letters + string.digits
-        np = ''
-        for i in range(10):
-            np = np + choice(chars)
-        return np
+        return ''.join(random.sample(chars, 10))
 
     def get_content_id(self, text):
         """
         Creates a SHA1 hash of the text of your submission.
         """
-        h = hashlib.sha1()
-        h.update(text)
-        return h.hexdigest()
+        checksum = hashlib.sha1(text)
+        return checksum.hexdigest()
 
     def preprocess_html(self, html):
         html = html.replace('\n', '')
@@ -120,36 +111,39 @@ class Calais(object):
     def analyze(self, content, content_type='TEXT/RAW', external_id=None):
         if not (content and len(content.strip())):
             return None
+
         self.processing_directives['contentType'] = content_type
+
         if external_id:
             self.user_directives['externalID'] = urllib.quote(external_id)
 
         return CalaisResponse(self.rest_POST(content))
 
     def analyze_url(self, url):
-        f = urllib.urlopen(url)
-        html = self.preprocess_html(f.read())
+        request = urllib.urlopen(url)
+        html = self.preprocess_html(request.read())
         return self.analyze(html, content_type='TEXT/HTML', external_id=url)
 
-    def analyze_file(self, fn):
+    def analyze_file(self, filename):
         try:
-            filetype = mimetypes.guess_type(fn)[0]
+            filetype = mimetypes.guess_type(filename)[0]
         except IndexError:
-            raise ValueError('Can not determine file type for "%s"' % fn)
+            raise ValueError('Can not determine file type for "%s"' % filename)
 
+        # Let's hope this does not leave file descriptors open.
+        content = open(filename).read()
+        content_type = ''
         if filetype == 'text/plain':
             content_type = 'TEXT/RAW'
-            f = open(fn)
-            content = f.read()
-            f.close()
+        elif filetype == 'application/xml':
+            content_type = 'TEXT/XML'
         elif filetype == 'text/html':
-            content_type = 'TEXT/HTML'
-            f = open(fn)
-            content = self.preprocess_html(f.read())
-            f.close()
+            content_type = filetype.upper()
+            content = self.preprocess_html(content)
         else:
-            raise ValueError('Only plaintext and HTML files are '
+            raise ValueError('Only plaintext, HTML or XML files are '
                              'currently supported.')
+
         return self.analyze(content, content_type=content_type, external_id=fn)
 
 
@@ -162,14 +156,13 @@ class CalaisResponse(object):
     simplified_response = None
 
     def __init__(self, raw_result):
-        self.raw_response = json.load(
-                    StringIO(raw_result.decode('utf-8', "[removed]")),
-                    encoding="utf-8")
+        self.raw_response = json.load(StringIO(raw_result.decode('utf-8')),
+                                      encoding="utf-8")
         self.simplified_response = self._simplify_json(self.raw_response)
 
         self.__dict__['doc'] = self.raw_response['doc']
-        for k, v in self.simplified_response.items():
-            self.__dict__[k] = v
+        for key, value in self.simplified_response.items():
+            self.__dict__[key] = value
 
     def _simplify_json(self, json):
         result = {}
@@ -179,6 +172,7 @@ class CalaisResponse(object):
                 if (isinstance(value, unicode) and value.startswith('http://')
                         and value in json):
                     element[key] = json[value]
+
         for key, value in json.items():
             if '_typeGroup' in value:
                 group = value['_typeGroup']
@@ -188,6 +182,7 @@ class CalaisResponse(object):
                 del value['_typeGroup']
                 value['__reference'] = key
                 result[group].append(value)
+
         return result
 
     def print_summary(self):
