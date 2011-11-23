@@ -82,7 +82,8 @@ class Calais(object):
     def rest_POST(self, content):
         params = urllib.urlencode(
                     {'licenseID': self.api_key,
-                     'content': content.encode('ascii', 'xmlcharrefreplace'),
+                     'content': (content.decode('utf8')
+                                        .encode('ascii', 'xmlcharrefreplace')),
                      'paramsXML': self._get_params_XML(),
                     })
         headers = {'Content-type': 'application/x-www-form-urlencoded'}
@@ -98,7 +99,7 @@ class Calais(object):
         Creates a random 10-character ID for your submission.
         """
         chars = string.letters + string.digits
-        np = ""
+        np = ''
         for i in range(10):
             np = np + choice(chars)
         return np
