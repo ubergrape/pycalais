@@ -121,7 +121,7 @@ class Calais(object):
             return None
         self.processing_directives['contentType'] = content_type
         if external_id:
-            self.user_directives['externalID'] = external_id
+            self.user_directives['externalID'] = urllib.quote(external_id)
 
         return CalaisResponse(self.rest_POST(content))
 
