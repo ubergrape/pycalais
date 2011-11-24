@@ -1,15 +1,37 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from setuptools import setup
+# coding: utf-8
+from distutils.core import setup
 
-setup(name='calais',
-      py_modules = ['calais'],
-      description='Python interface to the OpenCalais API',
-      long_description="This Python module is a wrapper around the OpenCalais API as documented at http://www.opencalais.com/calaisAPI by Reuters. It makes REST calls to the OpenCalais API via HTTP POST, then parses and simplifies the JSON responses returned by OpenCalais. You can then access the response data in a much more pythonic manner.",
-      url='http://code.google.com/p/python-calais/',
-      license = 'BSD License',
-      keywords = "opencalais",
-      classifiers = [ "License :: OSI Approved :: BSD License",
-                      "Programming Language :: Python" ],
-      install_requires=["simplejson>=2.0"]
+from calais import __version__ as VERSION
+
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+    "Environment :: Web Environment",
+    "License :: OSI Approved :: BSD License",
+    "Development Status :: 5 - Production/Stable",
+]
+
+requires = ["rdflib==3.0", "rdfextras==0.1", ]
+# This might not be the best idea, but I did not encounter any bug
+# while testing with both libraries.
+try:
+    import json
+except ImportError:
+    requires.append('simplejson>=2.0')
+
+
+setup(name='pycalais',
+      version=VERSION,
+      license='BSD',
+      url='https://github.com/newsgrape/pycalais',
+      py_modules=['calais', 'calais_rdf'],
+      description='Python interface to the OpenCalais REST API',
+      long_description=open('README.rst').read(),
+      keywords="opencalais calais rdf",
+      classifiers=classifiers,
+      install_requires=requires,
 )
