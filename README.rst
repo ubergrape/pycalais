@@ -3,11 +3,18 @@ pycalais
 ========
 
 is a nearly identical clone of python-calais_ and therefore an interface to
-the OpenCalais REST API.
+the `OpenCalais REST API`_.
 
-This version fixes some of the issues reported in the google code issue
-tracker. Furthermore the original README is converted into reST format, see
-below.
+To be more specific, we are using the `paramsXML Method`_.
+
+Changes from the original include:
+
+- most issues reported on google code are fixed.
+- README converted into reST format.
+- PEP8 compliance & code cleanup
+
+.. _`OpenCalais REST API`: http://www.opencalais.com/documentation/calais-web-service-api
+.. _`paramsXML Method`: http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest-using-paramsxml
 
 Requirements
 ============
