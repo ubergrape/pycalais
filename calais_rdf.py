@@ -1,18 +1,27 @@
 # coding: utf-8
 """
-calais-rdf
+calais_rdf
 
-RDF extension for Jordan Dimov's Python interface to the OpenCalais API
+RDF extension for Jordan Dimov's Python interface to the OpenCalais API.
 
 Author: Mark Soper (mark@likematter.com)
 Last-Update: 04/15/2009
 """
 
 from StringIO import StringIO
+
 from rdflib import ConjunctiveGraph as Graph
 from rdflib import Namespace
+from rdflib import plugin
+from rdflib import query
+
 from calais import Calais, CalaisResponse
 
+
+plugin.register('sparql', query.Processor,
+                'rdfextras.sparql.processor', 'Processor')
+plugin.register('sparql', query.Result,
+                'rdfextras.sparql.query', 'SPARQLQueryResult')
 
 CATEGORY_QUERY = {'fields': ['docId', 'category', 'categoryName', 'score'],
                    'SPARQL': """
@@ -55,13 +64,9 @@ class RDFCalais(Calais):
                              'omitOutputtingOriginalText': 'true'}
 
     def analyze(self, content, content_type='TEXT/RAW', external_id=None):
-        if not (content and len(content.strip())):
-            return None
-
-        self.processing_directives['contentType'] = content_type
-        if external_id:
-            self.user_directives['externalID'] = external_id
-        return RDFCalaisResponse(self.rest_POST(content))
+        return super(RDFCalais, self).analyze(content, content_type,
+                                              external_id,
+                                              response_cls=RDFCalaisResponse)
 
 
 class RDFCalaisResponse(CalaisResponse):

@@ -2,8 +2,8 @@
 pycalais
 ========
 
-is a nearly identical clone from python-calais_ and therefore an interface to
-the OpenCalais API.
+is a nearly identical clone of python-calais_ and therefore an interface to
+the OpenCalais REST API.
 
 This version fixes some of the issues reported in the google code issue
 tracker. Furthermore the original README is converted into reST format, see
@@ -16,6 +16,10 @@ This module has been tested with Python 2.5 and Python 2.7.
 
 Python <2.6 need the ``simplejson`` module to be installed.
 
+In case you want to use the ``calais_rdf`` module/extension, you need to
+install ``rdflib`` and ``rdfextras``. The latter one is needed for SPARQL query
+support, just so you know.
+
 Usage
 =====
 
@@ -26,8 +30,8 @@ OpenCalais API key and a string identifier of your application:
     >>> API_KEY = "your-opencalais-api-key"
     >>> calais = Calais(API_KEY, submitter="python-calais demo")
 
-You can then use the ``analyze()`` method.  It takes a string, containing the text
-to be analyzed by Calais and returns a ``CalaisResponse()`` object:
+You can then use the ``analyze()`` method.  It takes a string, containing the
+text to be analyzed by Calais and returns a ``CalaisResponse()`` object:
 
     >>> result = calais.analyze("""
             George Bush was the President of the United States of America
@@ -70,7 +74,8 @@ Or you can access the results directly:
     >>> print result.entities[0]["name"]
     Barack Obama
 
-You can also set processing and user directives before you make an ``analyze()`` call:
+You can also set processing and user directives before you make an
+``analyze()`` call:
 
     >>> calais.user_directives["allowDistribution"] = "true"
     >>> result3 = calais.analyze("Some non-confidential text",
@@ -79,7 +84,7 @@ You can also set processing and user directives before you make an ``analyze()``
 Notes
 =====
 
-The original python-calais_ project was/is sponsored by `A115 Ltd`_.
+The original python-calais_ project is sponsored by `A115 Ltd`_.
 
 .. _`A115 LTD`: http://www.a115.bg/en/
 .. _python-calais: http://code.google.com/p/python-calais/
