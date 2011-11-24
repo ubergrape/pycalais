@@ -100,7 +100,7 @@ Just use the ``RDFCalais()`` class instead of the regular one::
 
     >>> from calais import RDFCalais
     >>> calais = RDFCalais("your-opencalais-api-key",
-    ...                 submitter="pycalais rdf/sparql demo")
+    ...                    submitter="pycalais rdf/sparql demo")
     >>> result = calais.analyze("""
     ...     George Bush was the President of the United States of America
     ...     until 2009.  Barack Obama is the new President of
