@@ -31,14 +31,14 @@ Usage
 =====
 
 To use the OpenCalais API, first create a ``Calais()`` object, passing it your
-OpenCalais API key and a string identifier of your application:
+OpenCalais API key and a string identifier of your application::
 
     >>> from calais import Calais
     >>> calais = Calais("your-opencalais-api-key",
                         submitter="pycalais demo")
 
 You can then use the ``analyze()`` method.  It takes a string, containing the
-text to be analyzed by Calais and returns a ``CalaisResponse()`` object:
+text to be analyzed by Calais and returns a ``CalaisResponse()`` object::
 
     >>> result = calais.analyze("""
             George Bush was the President of the United States of America
@@ -46,12 +46,12 @@ text to be analyzed by Calais and returns a ``CalaisResponse()`` object:
             the United States now.""")
 
 Or you can use the ``analyze_url()`` method, which downloads the specified HTML
-page and passes it on to OpenCalais:
+page and passes it on to OpenCalais::
 
     >>> result2 = calais.analyze_url("http://www.example.com/")
 
 The ``CalaisResponse`` class provides several helper methods that print
-information about the response:
+information about the response::
 
     >>> result.print_summary()
     Calais Request ID: 0bfa1f51-4dec-4a82-aba6-a9f8243a94fd
@@ -76,13 +76,13 @@ information about the response:
             person:Barack Obama
             position:President of the United States
 
-Or you can access the results directly:
+Or you can access the results directly::
 
     >>> print result.entities[0]["name"]
     Barack Obama
 
 You can also set processing and user directives before you make an
-``analyze()`` call:
+``analyze()`` call::
 
     >>> calais.user_directives["allowDistribution"] = "true"
     >>> result3 = calais.analyze("Some non-confidential text",
