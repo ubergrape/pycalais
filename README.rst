@@ -9,9 +9,10 @@ To be more specific, we are using the `paramsXML Method`_.
 
 Changes from the original include:
 
-- most issues reported on google code are fixed.
+- Most issues reported on google code are fixed.
 - README converted into reST format.
 - PEP8 compliance & code cleanup
+- Test Coverage
 
 .. _`OpenCalais REST API`: http://www.opencalais.com/documentation/calais-web-service-api
 .. _`paramsXML Method`: http://www.opencalais.com/documentation/calais-web-service-api/api-invocation/rest-using-paramsxml
