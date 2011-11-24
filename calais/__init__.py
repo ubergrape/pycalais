@@ -1,7 +1,7 @@
-from calais.BaseCalais import Calais
-from calais.CalaisResponse import CalaisResponse
+from calais.base.client import Calais
+from calais.base.response import CalaisResponse
 
-from calais.RDFCalais import RDFCalais
-from calais.RDFCalaisResponse import RDFCalaisResponse
+from calais.rdf.client import RDFCalais
+from calais.rdf.response import RDFCalaisResponse
 
 __version__ = '1.0'

@@ -12,8 +12,7 @@ from rdflib import Namespace
 from rdflib import plugin
 from rdflib import query
 
-from calais.BaseCalais import Calais
-from calais.CalaisResponse import CalaisResponse
+from calais.base.response import CalaisResponse
 
 
 # Register RDFLib SPARQL support.

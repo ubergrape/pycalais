@@ -5,8 +5,8 @@ RDF Extension for pycalais.
 The original RDF extension was written by Mark Soper for Jordan Dimov's
 original Python interface to the OpenCalais API.
 """
-from calais.BaseCalais import Calais
-from calais.RDFCalaisResponse import RDFCalaisResponse
+from calais.base.client import Calais
+from calais.rdf.response import RDFCalaisResponse
 
 
 class RDFCalais(Calais):

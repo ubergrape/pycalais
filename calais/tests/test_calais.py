@@ -14,7 +14,7 @@ class DummyRequest(object):
 
 def dummy_urlopen(*args, **kwargs):
     return DummyRequest()
-calais.BaseCalais.urllib.urlopen = dummy_urlopen
+calais.base.client.urllib.urlopen = dummy_urlopen
 
 
 class DummyCalaisResponse(object):

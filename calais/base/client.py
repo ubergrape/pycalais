@@ -15,7 +15,7 @@ import hashlib
 import mimetypes
 from xml.sax.saxutils import escape
 
-from calais.CalaisResponse import CalaisResponse
+from calais.base.response import CalaisResponse
 
 
 PARAMS_XML = """

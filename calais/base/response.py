@@ -19,6 +19,10 @@ class CalaisResponse(object):
     simplified_response = None
 
     def __init__(self, raw_result):
+        if not '{' in raw_result:
+            raise ValueError('OpenCalais returned the following error: "%s"'
+                                % raw_result)
+
         self.raw_response = json.load(StringIO(raw_result.decode('utf-8')),
                                       encoding="utf-8")
         self.simplified_response = self._simplify_json(self.raw_response)
