@@ -23,9 +23,9 @@ This module has been tested with Python 2.5 and Python 2.7.
 
 Python <2.6 need the ``simplejson`` module to be installed.
 
-In case you want to use the ``calais_rdf`` module/extension, you need to
-install ``rdflib`` and ``rdfextras``. The latter one is needed for SPARQL query
-support, just so you know.
+In case you want to use the ``RDFCalais`` module, you need to
+install ``rdflib >= 3`` and ``rdfextras >= 0.1``.
+The latter one is needed for SPARQL query support, just so you know.
 
 Usage
 =====
