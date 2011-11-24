@@ -1,13 +1,10 @@
 # coding: utf-8
 """
-calais_rdf
+CalaisResponse queryable through SPARQL.
 
-RDF extension for Jordan Dimov's Python interface to the OpenCalais API.
-
-Author: Mark Soper (mark@likematter.com)
-Last-Update: 04/15/2009
+The original RDF extension was written by Mark Soper for Jordan Dimov's
+original Python interface to the OpenCalais API.
 """
-
 from StringIO import StringIO
 
 from rdflib import ConjunctiveGraph as Graph
@@ -15,18 +12,22 @@ from rdflib import Namespace
 from rdflib import plugin
 from rdflib import query
 
-from calais import Calais, CalaisResponse
+from calais.BaseCalais import Calais
+from calais.CalaisResponse import CalaisResponse
 
 
+# Register RDFLib SPARQL support.
 plugin.register('sparql', query.Processor,
                 'rdfextras.sparql.processor', 'Processor')
 plugin.register('sparql', query.Result,
                 'rdfextras.sparql.query', 'SPARQLQueryResult')
 
+# SPARQL Queries
 CATEGORY_QUERY = {'fields': ['docId', 'category', 'categoryName', 'score'],
                    'SPARQL': """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX cp: <http://s.opencalais.com/1/pred/>
+
     SELECT ?docId ?category ?categoryName ?score
     WHERE { ?doc cp:docId ?docId .
             ?doc cp:category ?category .
@@ -41,7 +42,8 @@ ENTITY_QUERY = {'fields': ['entityId', 'name', 'type', 'relevance',
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX cp: <http://s.opencalais.com/1/pred/>
 
-    SELECT ?entity ?name ?type ?relevance ?res_uri ?res_type ?res_name ?res_score
+    SELECT ?entity ?name ?type ?relevance
+           ?res_uri ?res_type ?res_name ?res_score
     WHERE {
            ?entity cp:name ?name .
            ?entity rdf:type ?type .
@@ -54,22 +56,12 @@ ENTITY_QUERY = {'fields': ['entityId', 'name', 'type', 'relevance',
       """, }
 
 
-class RDFCalais(Calais):
-    processing_directives = {'contentType': 'TEXT/RAW',
-                             'outputFormat': 'xml/rdf',
-                             'reltagBaseURL': None,
-                             'calculateRelevanceScore': 'true',
-                             'enableMetadataType': None,
-                             'discardMetadata': None,
-                             'omitOutputtingOriginalText': 'true'}
-
-    def analyze(self, content, content_type='TEXT/RAW', external_id=None):
-        return super(RDFCalais, self).analyze(content, content_type,
-                                              external_id,
-                                              response_cls=RDFCalaisResponse)
-
 
 class RDFCalaisResponse(CalaisResponse):
+    """
+    RDFCalaisResponse creates a graph from the received output from OpenCalais
+    and makes it queryable through SPARQL.
+    """
     def __init__(self, raw_result):
         rdf = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
         c = Namespace('http://s.opencalais.com/1/pred/')
@@ -82,16 +74,21 @@ class RDFCalaisResponse(CalaisResponse):
         self.entities = [row for row in g.query(ENTITY_QUERY['SPARQL'])]
 
     def _simplify_json(self, json):
-        raise NotImplementedError('Not available in RDF implementation')
+        raise NotImplementedError('Not available in pycalais '
+                                  'RDF implementation')
 
     def print_summary(self):
-        raise NotImplementedError('Not available in RDF implementation')
+        raise NotImplementedError('Not available in pycalais '
+                                  'RDF implementation')
 
     def print_entities(self):
-        raise NotImplementedError('Not available in RDF implementation')
+        raise NotImplementedError('Not available in pycalais '
+                                  'RDF implementation')
 
     def print_topics(self):
-        raise NotImplementedError('Not available in RDF implementation')
+        raise NotImplementedError('Not available in pycalais '
+                                  'RDF implementation')
 
     def print_relations(self):
-        raise NotImplementedError('Not available in RDF implementation')
+        raise NotImplementedError('Not available in pycalais '
+                                  'RDF implementation')

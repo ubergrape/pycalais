@@ -6,8 +6,6 @@ Cloned and modified from Jordan Dimov's python-calais.
 
 This interface uses OpenCalais' "paramsXML" REST API method.
 """
-__version__ = '1.0'
-
 import re
 import string
 import random
@@ -16,11 +14,8 @@ import httplib
 import hashlib
 import mimetypes
 from xml.sax.saxutils import escape
-from StringIO import StringIO
-try:  # Python <2.6 needs the simplejson module.
-    import simplejson as json
-except ImportError:
-    import json
+
+from calais.CalaisResponse import CalaisResponse
 
 
 PARAMS_XML = """
@@ -44,100 +39,6 @@ class AppURLopener(urllib.FancyURLopener):
 urllib._urlopener = AppURLopener()
 
 
-class CalaisResponse(object):
-    """
-    Encapsulates a parsed Calais response and provides pythonic access
-    to the data.
-    """
-    raw_response = None
-    simplified_response = None
-
-    def __init__(self, raw_result):
-        self.raw_response = json.load(StringIO(raw_result.decode('utf-8')),
-                                      encoding="utf-8")
-        self.simplified_response = self._simplify_json(self.raw_response)
-
-        self.__dict__['doc'] = self.raw_response['doc']
-        for key, value in self.simplified_response.items():
-            self.__dict__[key] = value
-
-    def _simplify_json(self, json):
-        result = {}
-        # First, resolve references
-        for element in json.values():
-            for key, value in element.items():
-                if (isinstance(value, unicode) and value.startswith('http://')
-                        and value in json):
-                    element[key] = json[value]
-
-        for key, value in json.items():
-            if '_typeGroup' in value:
-                group = value['_typeGroup']
-                # TODO: use setdefault()
-                if not group in result:
-                    result[group] = []
-                del value['_typeGroup']
-                value['__reference'] = key
-                result[group].append(value)
-
-        return result
-
-    def print_summary(self):
-        if not hasattr(self, 'doc'):
-            return None
-
-        info = self.doc['info']
-        print 'Calais Request ID: %s' % info['calaisRequestID']
-
-        if 'externalID' in info:
-            print 'External ID: %s' % info['externalID']
-
-        if 'docTitle' in info:
-            print 'Title: %s ' % info['docTitle']
-
-        print 'Language: %s' % self.doc['meta']['language']
-        print 'Extractions: '
-
-        simple_response = self.simplified_response.items()
-        for key, value in simple_response:
-            print '\t%d %s' % (len(value), key)
-
-    def print_entities(self):
-        if not hasattr(self, 'entities'):
-            return None
-
-        for item in self.entities:
-            print '%s: %s (%.2f)' % (item['_type'], item['name'],
-                                     item['relevance'])
-
-    def print_topics(self):
-        if not hasattr(self, 'topics'):
-            return None
-
-        for topic in self.topics:
-            print topic['categoryName']
-
-    def print_relations(self):
-        if not hasattr(self, 'relations'):
-            return None
-
-        for relation in self.relations:
-            print relation['_type']
-            for k, v in relation.items():
-                if not k.startswith('_'):
-                    if isinstance(v, unicode):
-                        print '\t%s:%s' % (k, v)
-                    elif isinstance(v, dict) and 'name' in v:
-                        print '\t%s:%s' % (k, v['name'])
-
-    def print_social_tags(self):
-        if not hasattr(self, 'socialTag'):
-            return None
-
-        for socialTag in self.socialTag:
-            print '%s %s' % (socialTag['name'], socialTag['importance'])
-
-
 class Calais(object):
     """
     Python class that knows how to talk to the OpenCalais API.
@@ -158,7 +59,11 @@ class Calais(object):
                        "externalID": None, }
     external_metadata = {}
 
-    def __init__(self, api_key, submitter="pycalais %s" % __version__):
+    def __init__(self, api_key, submitter=False):
+        if not submitter:
+            # self. does not work in the function header.
+            submitter = self._get_version()
+
         self.api_key = api_key
         self.user_directives["submitter"] = submitter
 
@@ -171,6 +76,13 @@ class Calais(object):
         return PARAMS_XML % (x(self.processing_directives),
                              x(self.user_directives),
                              x(self.external_metadata))
+
+    def _get_version(self):
+        # HACK: We need to defer the __init__.py import since we are
+        #       importing this and other files in __init__ so imports for
+        #       other developers are beautiful. <3
+        from calais import __version__
+        return __version__
 
     def rest_POST(self, content):
         params = urllib.urlencode(
@@ -190,6 +102,9 @@ class Calais(object):
     def get_random_id(self):
         """
         Creates a random 10-character ID for your submission.
+
+        Don't get confused, this method is not directly used here,
+        however the user may use it as external_id for ``analyze()``.
         """
         chars = string.letters + string.digits
         return ''.join(random.sample(chars, 10))
@@ -197,6 +112,9 @@ class Calais(object):
     def get_content_id(self, text):
         """
         Creates a SHA1 hash of the text of your submission.
+
+        Don't get confused, this method is not directly used here,
+        however the user may use it as external_id for ``analyze()``.
         """
         h = hashlib.sha1()
         h.update(text)
@@ -244,4 +162,5 @@ class Calais(object):
             raise ValueError('Only plaintext, HTML or XML files are '
                              'currently supported.')
 
-        return self.analyze(content, content_type=content_type, external_id=fn)
+        return self.analyze(content, content_type=content_type,
+                            external_id=filename)

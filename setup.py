@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
-from distutils.core import setup
+from setuptools import setup
+from setuptools import find_packages
 
 from calais import __version__ as VERSION
 
@@ -28,7 +29,7 @@ setup(name='pycalais',
       version=VERSION,
       license='BSD',
       url='https://github.com/newsgrape/pycalais',
-      py_modules=['calais', 'calais_rdf'],
+      packages=find_packages(),
       description='Python interface to the OpenCalais REST API',
       long_description=open('README.rst').read(),
       keywords="opencalais calais rdf",
