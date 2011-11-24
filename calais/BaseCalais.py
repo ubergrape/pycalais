@@ -132,7 +132,7 @@ class Calais(object):
 
         self.processing_directives['contentType'] = content_type
 
-        if external_id:
+        if not external_id is None:
             self.user_directives['externalID'] = urllib.quote(external_id)
 
         return response_cls(self.rest_POST(content))
@@ -143,9 +143,8 @@ class Calais(object):
         return self.analyze(html, content_type='TEXT/HTML', external_id=url)
 
     def analyze_file(self, filename):
-        try:
-            filetype = mimetypes.guess_type(filename)[0]
-        except IndexError:
+        filetype = mimetypes.guess_type(filename)[0]
+        if filetype is None:
             raise ValueError('Can not determine file type for "%s"' % filename)
 
         # Let's hope this does not leave file descriptors open.
