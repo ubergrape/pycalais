@@ -34,8 +34,8 @@ To use the OpenCalais API, first create a ``Calais()`` object, passing it your
 OpenCalais API key and a string identifier of your application:
 
     >>> from calais import Calais
-    >>> API_KEY = "your-opencalais-api-key"
-    >>> calais = Calais(API_KEY, submitter="python-calais demo")
+    >>> calais = Calais("your-opencalais-api-key",
+                        submitter="pycalais demo")
 
 You can then use the ``analyze()`` method.  It takes a string, containing the
 text to be analyzed by Calais and returns a ``CalaisResponse()`` object:
@@ -48,10 +48,10 @@ text to be analyzed by Calais and returns a ``CalaisResponse()`` object:
 Or you can use the ``analyze_url()`` method, which downloads the specified HTML
 page and passes it on to OpenCalais:
 
-    >>> result2 = calais.analyze_url("http://www.bestofsicily.com/mafia.htm")
+    >>> result2 = calais.analyze_url("http://www.example.com/")
 
-The CalaisResponse class provides several helper methods that print information
-about the response:
+The ``CalaisResponse`` class provides several helper methods that print
+information about the response:
 
     >>> result.print_summary()
     Calais Request ID: 0bfa1f51-4dec-4a82-aba6-a9f8243a94fd
@@ -87,6 +87,9 @@ You can also set processing and user directives before you make an
     >>> calais.user_directives["allowDistribution"] = "true"
     >>> result3 = calais.analyze("Some non-confidential text",
                                   external_id=calais.get_random_id())
+
+This should get you up and running. For further information, I guess you should
+check out the code. It is pretty! :-)
 
 Notes
 =====
