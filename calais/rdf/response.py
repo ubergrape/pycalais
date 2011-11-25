@@ -71,23 +71,3 @@ class RDFCalaisResponse(CalaisResponse):
 
         self.categories = [row for row in g.query(CATEGORY_QUERY['SPARQL'])]
         self.entities = [row for row in g.query(ENTITY_QUERY['SPARQL'])]
-
-    def _simplify_json(self, json):
-        raise NotImplementedError('Not available in pycalais '
-                                  'RDF implementation')
-
-    def print_summary(self):
-        raise NotImplementedError('Not available in pycalais '
-                                  'RDF implementation')
-
-    def print_entities(self):
-        raise NotImplementedError('Not available in pycalais '
-                                  'RDF implementation')
-
-    def print_topics(self):
-        raise NotImplementedError('Not available in pycalais '
-                                  'RDF implementation')
-
-    def print_relations(self):
-        raise NotImplementedError('Not available in pycalais '
-                                  'RDF implementation')
