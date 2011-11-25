@@ -71,7 +71,7 @@ class Calais(object):
         # This could be further simplified through map(),
         # however I think readability is better this way.
         x = lambda y: " ".join('c:%s="%s"' % (key, escape(value))
-                                              for (key, value) in y.items()
+                                              for (key, value) in y.iteritems()
                                               if value)
         return PARAMS_XML % (x(self.processing_directives),
                              x(self.user_directives),
