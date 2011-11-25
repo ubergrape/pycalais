@@ -101,6 +101,11 @@ you do not have to use ``hasattr()``. Instead you may use python's magic
     >>> 'events' in result
     False
 
+If you have the feeling something is wrong, you always have access to the raw
+response::
+
+    >>> result.raw_response
+
 This should get you up and running. For further information, you should
 check out the code (it's pretty :-)) or play around in the interpreter (we
 highly recommend iPython because of the nice autocompletion).
