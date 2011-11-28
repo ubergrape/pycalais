@@ -15,6 +15,7 @@ import hashlib
 import mimetypes
 from xml.sax.saxutils import escape
 
+from calais import __version__
 from calais.base.response import CalaisResponse
 
 
@@ -59,11 +60,7 @@ class Calais(object):
                        "externalID": None, }
     external_metadata = {}
 
-    def __init__(self, api_key, submitter=False):
-        if not submitter:
-            # self. does not work in the function header.
-            submitter = self._get_version()
-
+    def __init__(self, api_key, submitter='pycalais-v%s' % __version__):
         self.api_key = api_key
         self.user_directives["submitter"] = submitter
 
@@ -76,13 +73,6 @@ class Calais(object):
         return PARAMS_XML % (x(self.processing_directives),
                              x(self.user_directives),
                              x(self.external_metadata))
-
-    def _get_version(self):
-        # HACK: We need to defer the __init__.py import since we are
-        #       importing this and other files in __init__ so imports for
-        #       other developers are beautiful. <3
-        from calais import __version__
-        return __version__
 
     def rest_POST(self, content):
         params = urllib.urlencode(
