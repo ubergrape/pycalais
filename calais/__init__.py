@@ -1,7 +1,2 @@
-from calais.base.client import Calais
-from calais.base.response import CalaisResponse
-
-from calais.rdf.client import RDFCalais
-from calais.rdf.response import RDFCalaisResponse
-
-__version__ = '1.0'
+__version_info__ = (1, 0, 0)
+__version__ = '.'.join(map(str, __version_info__))

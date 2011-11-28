@@ -4,13 +4,6 @@ from setuptools import setup
 from setuptools import find_packages
 
 
-# Defer version detection to the point where it is needed.
-# Avoiding requirement clashes before requirements got installed.
-def get_version():
-    from calais import __version__ as VERSION
-    return VERSION
-
-
 classifiers = [
     "Intended Audience :: Developers",
     "Programming Language :: Python",
@@ -31,7 +24,7 @@ except ImportError:
 
 
 setup(name='pycalais',
-      version=get_version(),
+      version=__import__('calais').__version__,
       license='BSD',
       url='https://github.com/newsgrape/pycalais',
       packages=find_packages(),

@@ -4,7 +4,7 @@ import unittest
 
 from nose.tools import eq_, ok_, raises
 
-import calais
+from calais.base import client
 
 
 # The good monkeypatching
@@ -14,7 +14,7 @@ class DummyRequest(object):
 
 def dummy_urlopen(*args, **kwargs):
     return DummyRequest()
-calais.base.client.urllib.urlopen = dummy_urlopen
+client.urllib.urlopen = dummy_urlopen
 
 
 class DummyCalaisResponse(object):
@@ -28,7 +28,7 @@ class DummyCalaisResponse(object):
 
 class BaseCalaisTest(unittest.TestCase):
     def setUp(self):
-        self.c = calais.Calais('asdf')
+        self.c = client.Calais('asdf')
 
 
 class CalaisTest(BaseCalaisTest):

@@ -35,14 +35,14 @@ Usage
 To use the OpenCalais API, first create a ``Calais()`` object, passing it your
 OpenCalais API key and a string identifier of your application::
 
-    >>> from calais import Calais
-    >>> calais = Calais("your-opencalais-api-key",
-    ...                 submitter="pycalais demo")
+    >>> from calais.base.client import Calais
+    >>> api = Calais("your-opencalais-api-key",
+    ...              submitter="pycalais demo")
 
 You can then use the ``analyze()`` method.  It takes a string, containing the
 text to be analyzed by Calais and returns a ``CalaisResponse()`` object::
 
-    >>> result = calais.analyze("""
+    >>> result = api.analyze("""
     ...     George Bush was the President of the United States of America
     ...     until 2009.  Barack Obama is the new President of
     ...     the United States now.""")
@@ -50,7 +50,7 @@ text to be analyzed by Calais and returns a ``CalaisResponse()`` object::
 Or you can use the ``analyze_url()`` method, which downloads the specified HTML
 page and passes it on to OpenCalais::
 
-    >>> result2 = calais.analyze_url("http://www.example.com/")
+    >>> result2 = api.analyze_url("http://www.example.com/")
 
 The response object automagically scans through OpenCalais' output and sets
 it's attributes depending on this output. Let's say we've analyzed the previous
@@ -118,10 +118,10 @@ OpenCalais Response, thanks to the work of Mark Soper.
 
 Just use the ``RDFCalais()`` class instead of the regular one::
 
-    >>> from calais import RDFCalais
-    >>> calais = RDFCalais("your-opencalais-api-key",
-    ...                    submitter="pycalais rdf/sparql demo")
-    >>> result = calais.analyze("""
+    >>> from calais.rdf.client import RDFCalais
+    >>> rdf_api = RDFCalais("your-opencalais-api-key",
+    ...                     submitter="pycalais rdf/sparql demo")
+    >>> result = rdf_api.analyze("""
     ...     George Bush was the President of the United States of America
     ...     until 2009.  Barack Obama is the new President of
     ...     the United States now.""")
