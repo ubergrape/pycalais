@@ -3,7 +3,12 @@
 from setuptools import setup
 from setuptools import find_packages
 
-from calais import __version__ as VERSION
+
+# Defer version detection to the point where it is needed.
+# Avoiding requirement clashes before requirements got installed.
+def get_version():
+    from calais import __version__ as VERSION
+    return VERSION
 
 
 classifiers = [
@@ -26,7 +31,7 @@ except ImportError:
 
 
 setup(name='pycalais',
-      version=VERSION,
+      version=get_version(),
       license='BSD',
       url='https://github.com/newsgrape/pycalais',
       packages=find_packages(),
