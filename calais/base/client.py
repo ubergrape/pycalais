@@ -51,28 +51,49 @@ class Calais(object):
     processing_directives = {"contentType": "TEXT/RAW",
                              "outputFormat": "application/json",
                              "reltagBaseURL": None,
-                             "calculateRelevanceScore": "true",
+                             "calculateRelevanceScore": True,
                              "enableMetadataType": "SocialTags",
                              "discardMetadata": None,
-                             "omitOutputtingOriginalText": "true", }
-    user_directives = {"allowDistribution": "false",
-                       "allowSearch": "false",
+                             "omitOutputtingOriginalText": True, }
+    user_directives = {"allowDistribution": False,
+                       "allowSearch": False,
                        "externalID": None, }
     external_metadata = {}
 
-    def __init__(self, api_key, submitter='pycalais-v%s' % __version__):
+    def __init__(self, api_key, proc_directs=None, user_directs=None,
+                 ext_metadata=None, submitter='pycalais-v%s' % __version__):
+        # Basically you could simply overwrite the directives of an instance,
+        # but this feels much better when you already know what you want.
+        if proc_directs is not None:
+            self.processing_directives.update(proc_directs)
+        if user_directs is not None:
+            self.user_directives.update(user_directs)
+        if ext_metadata is not None:
+            self.external_metadata.update(ext_metadata)
+
         self.api_key = api_key
         self.user_directives["submitter"] = submitter
 
+    def _directives_to_XML(self, dictionary):
+        xml_template = 'c:%s="%s"'
+        attrs = []
+        for key, value in dictionary.iteritems():
+            if value is None:
+                continue
+
+            if value == True:
+                value = "true"
+            elif value == False:
+                value = "false"
+
+            attrs.append(xml_template % (key, value))
+        return ' '.join(attrs)
+
     def _get_params_XML(self):
-        # This could be further simplified through map(),
-        # however I think readability is better this way.
-        x = lambda y: " ".join('c:%s="%s"' % (key, escape(value))
-                                              for (key, value) in y.iteritems()
-                                              if value)
-        return PARAMS_XML % (x(self.processing_directives),
-                             x(self.user_directives),
-                             x(self.external_metadata))
+        return PARAMS_XML % (
+                self._directives_to_XML(self.processing_directives),
+                self._directives_to_XML(self.user_directives),
+                self._directives_to_XML(self.external_metadata))
 
     def rest_POST(self, content):
         params = urllib.urlencode(
@@ -122,7 +143,7 @@ class Calais(object):
 
         self.processing_directives['contentType'] = content_type
 
-        if not external_id is None:
+        if external_id is not None:
             self.user_directives['externalID'] = urllib.quote(external_id)
 
         return response_cls(self.rest_POST(content))
