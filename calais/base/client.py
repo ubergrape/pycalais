@@ -96,10 +96,17 @@ class Calais(object):
                 self._directives_to_XML(self.external_metadata))
 
     def rest_POST(self, content):
+        # It might be possible that we already have have some encoding,
+        # which does not decode to unicode. Let's not force it.
+        try:
+            content = content.decode('utf-8').encode('ascii',
+                                                     'xmlcharrefreplace')
+        except UnicodeDecodeError:
+            content = content.encode('ascii', 'xmlcharrefreplace')
+
         params = urllib.urlencode(
                     {'licenseID': self.api_key,
-                     'content': (content.decode('utf8')
-                                        .encode('ascii', 'xmlcharrefreplace')),
+                     'content': content,
                      'paramsXML': self._get_params_XML(),
                     })
         headers = {'Content-type': 'application/x-www-form-urlencoded'}
