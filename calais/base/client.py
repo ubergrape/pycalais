@@ -101,7 +101,7 @@ class Calais(object):
         try:
             content = content.decode('utf-8').encode('ascii',
                                                      'xmlcharrefreplace')
-        except UnicodeDecodeError:
+        except (UnicodeDecodeError, UnicodeEncodeError):
             content = content.encode('ascii', 'xmlcharrefreplace')
 
         params = urllib.urlencode(
