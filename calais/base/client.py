@@ -13,7 +13,6 @@ import urllib
 import httplib
 import hashlib
 import mimetypes
-from xml.sax.saxutils import escape
 
 from calais import __version__
 from calais.base.response import CalaisResponse
@@ -96,8 +95,7 @@ class Calais(object):
                 self._directives_to_XML(self.external_metadata))
 
     def rest_POST(self, content):
-        # It might be possible that we already have have some encoding,
-        # which does not decode to unicode. Let's not force it.
+        # Convert non-ascii characters into their XML entity counterparts.
         try:
             content = content.decode('utf-8').encode('ascii',
                                                      'xmlcharrefreplace')
