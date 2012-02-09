@@ -62,6 +62,7 @@ class RDFCalaisResponse(CalaisResponse):
     and makes it queryable through SPARQL.
     """
     def __init__(self, raw_result):
+        self._detect_fails(raw_result)
         rdf = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
         c = Namespace('http://s.opencalais.com/1/pred/')
         g = Graph()

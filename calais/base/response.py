@@ -8,6 +8,8 @@ try:  # Python <2.6 needs the simplejson module.
 except ImportError:
     import json
 
+from calais import exceptions
+
 
 class CalaisResponse(object):
     """
@@ -20,9 +22,7 @@ class CalaisResponse(object):
         # I would have put that in a try/except on json.loads, however
         # it is pretty hard to differ between a json exception and an
         # OpenCalais error message?
-        if not '{' in raw_result:
-            raise ValueError('OpenCalais returned the following error: "%s"'
-                                % raw_result)
+        self._detect_fails(raw_result)
 
         self.raw_response = json.loads(raw_result)
 
@@ -43,6 +43,19 @@ class CalaisResponse(object):
             except AttributeError:
                 # FIXME: Looks like the key was not an URI, ignore for now.
                 continue
+
+    def _detect_fails(self, resp):
+        if not '{' in resp:
+            lowercase = resp.lower()
+            if 'qps' in lowercase:
+                raise exceptions.MaxQpsExceeded('You reached your queries per '
+                                                'second limit.')
+            elif 'busy' in lowercase:
+                raise exceptions.BusyCalais('OpenCalais is too busy.')
+            else:
+                raise exceptions.CalaisError('OpenCalais returned the '
+                                             'following error: "%s"'
+                                             % resp)
 
     def __contains__(self, item):
         if hasattr(self, item):
