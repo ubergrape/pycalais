@@ -45,17 +45,28 @@ class CalaisResponse(object):
                 continue
 
     def _detect_fails(self, resp):
-        if not '{' in resp:
-            lowercase = resp.lower()
-            if 'qps' in lowercase:
-                raise exceptions.MaxQpsExceeded('You reached your queries per '
-                                                'second limit.')
-            elif 'busy' in lowercase:
-                raise exceptions.BusyCalais('OpenCalais is too busy.')
-            else:
-                raise exceptions.CalaisError('OpenCalais returned the '
-                                             'following error: "%s"'
-                                             % resp)
+        """
+        Detect any failures in the given raw response.
+        """
+        if '{' in resp:
+            return
+
+        lowercase = resp.lower()
+        if 'qps' in lowercase:
+            raise exceptions.MaxQpsExceeded('You reached your queries per '
+                                            'second limit.')
+        elif 'busy' in lowercase:
+            raise exceptions.BusyCalais('OpenCalais is too busy.')
+        elif 'supported languages' in lowercase:
+            raise exceptions.LanguageUnsupported("The content's language is"
+                                                 "not supported by OpenCalais"
+                                                 "yet.")
+        elif 'text length' in lowercase:
+            raise exceptions.MaxLenExceeded('Content too long for OpenCalais.')
+        else:
+            raise exceptions.CalaisError('OpenCalais returned the '
+                                            'following error: "%s"'
+                                            % resp)
 
     def __contains__(self, item):
         if hasattr(self, item):
