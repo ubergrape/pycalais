@@ -59,14 +59,15 @@ class CalaisResponse(object):
             raise exceptions.BusyCalais('OpenCalais is too busy.')
         elif 'supported languages' in lowercase:
             raise exceptions.LanguageUnsupported("The content's language is"
-                                                 "not supported by OpenCalais"
-                                                 "yet.")
+                                                 'not supported by OpenCalais'
+                                                 'yet.')
         elif 'text length' in lowercase:
             raise exceptions.MaxLenExceeded('Content too long for OpenCalais.')
+        elif 'gateway timeout' in lowercase:
+            raise exceptions.GatewayTimeout('Gateway timed out.')
         else:
-            raise exceptions.CalaisError('OpenCalais returned the '
-                                            'following error: "%s"'
-                                            % resp)
+            raise exceptions.CalaisError('OpenCalais returned the following '
+                                         'error: "%s"' % resp)
 
     def __contains__(self, item):
         if hasattr(self, item):

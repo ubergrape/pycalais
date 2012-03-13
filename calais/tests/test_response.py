@@ -9,6 +9,8 @@ BUSY_RESPONSE = '<Error Method="ProcessText" calaisRequestID="ed010f41-4ffb-c6fd
 QPS_RESPONSE = '<h1>403 Developer Over Qps</h1>'
 LANGUAGE_FAIL_RESPONSE = '<Error Method="ProcessText" calaisRequestID="347c8ee9-689f-f3a8-1356-3f995ceb5bb5" CreationDate="2012-02-09 15:16:35" CalaisVersion="R4.3_7.1.1103.5"><Exception>Calais continues to expand its list of supported languages, but does not yet support your submitted content.</Exception></Error>'
 MAX_LENGTH_RESPONSE = '<Error Method="ProcessText" calaisRequestID="9a8e48e6-bfa2-e92b-1356-3efbda98fc2f" CreationDate="2012-02-09 15:05:50" CalaisVersion="R4.3_7.1.1103.5"><Exception>Text length has exceeded the allowed size .</Exception></Error>'
+GATEWAY_TIMEOUT_RESPONSE = '<h1>504 Gateway Timeout</h1>'
+
 
 def test_info():
     r = CalaisResponse(RAW_RESPONSE)
@@ -44,6 +46,11 @@ def test_lang():
 @raises(exceptions.MaxLenExceeded)
 def test_len():
     return CalaisResponse(MAX_LENGTH_RESPONSE)
+
+
+@raises(exceptions.GatewayTimeout)
+def test_gateway():
+    return CalaisResponse(GATEWAY_TIMEOUT_RESPONSE)
 
 
 @raises(exceptions.CalaisError)

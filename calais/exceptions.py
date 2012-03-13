@@ -40,3 +40,10 @@ class MaxLenExceeded(CalaisError):
     others say around 20-40kByte.
     """
     pass
+
+
+class GatewayTimeout(CalaisError):
+    """
+    Exception raised when OpenCalais' Gateway timed out.
+    """
+    pass
